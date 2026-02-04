@@ -1,0 +1,31 @@
+# ===== Data files (DO NOT COMMIT) =====
+*.xlsx
+*.xls
+*.csv
+*.parquet
+*.db
+
+# ===== Secrets =====
+.env
+
+# ===== Python =====
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ===== Streamlit =====
+.streamlit/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Logs / outputs / zips / exes (DO NOT COMMIT) =====
+*.log
+*.txt
+*.zip
+*.exe
+
+# (Optional) keep only source code / configs
+# data-analysis/   # 如果这里是大文件，也可忽略
