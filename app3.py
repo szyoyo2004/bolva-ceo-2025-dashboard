@@ -1784,10 +1784,13 @@ def main():
             st.markdown("</div>", unsafe_allow_html=True)
 
         with right:
-            Top8 = top_products(sales, topn=8)
+            # [Fix] 联动 Quarter 筛选
+            Top8 = top_products(sales_q, topn=8)
 
             st.markdown('<div class="panel">', unsafe_allow_html=True)
-            st.plotly_chart(product_bar_chart(Top8), use_container_width=True)
+            # 动态标题
+            t_prod = f"Top8 Product Contribution ({quarter})"
+            st.plotly_chart(product_bar_chart(Top8).update_layout(title=t_prod), use_container_width=True)
             render_insight_module("产品贡献", get_product_insights(Top8, sales_q["销售收入"].sum()))
             st.caption("口径：销售数据按产品名称汇总（Top8 + Others）。悬停条形可查看金额。")
             st.markdown("</div>", unsafe_allow_html=True)
@@ -1812,7 +1815,7 @@ def main():
             st.info("未读取到《平台 销售费用比》，请检查工作表名称/表头列名。")
         else:
             st.markdown('<div class="panel">', unsafe_allow_html=True)
-            st.subheader("各平台｜年度费用指标（自动计算）")
+            st.subheader("各平台｜年度费用指标（数据源无月份，不支持季度筛选）")
 
             col_a, col_b, col_c = st.columns([1.4, 1.2, 1.4])
             with col_a:
@@ -1925,19 +1928,22 @@ def main():
             st.info("💡 未读取到有效的运营费用数据（请检查《运营费用》表中的“日期”与“金额”列）。")
         else:
             st.markdown('<div class="panel">', unsafe_allow_html=True)
-            st.subheader("年度运营费用分析")
+            st.subheader(f"运营费用分析 ({quarter})")
+
+            # [Fix] 联动 Quarter 筛选
+            opex_q = quarter_filter_month_str(opex_df, quarter, "月份")
 
             # 简单 KPI
-            total_opex = opex_df["运营费用"].sum()
+            total_opex = opex_q["运营费用"].sum()
             c_op1, c_op2 = st.columns([1, 3])
             with c_op1:
-                st.metric("年度运营费用合计", fmt_money(total_opex))
+                st.metric(f"运营费用合计 ({quarter})", fmt_money(total_opex))
             with c_op2:
-                fig_opex = px.bar(opex_df, x="月份", y="运营费用", title="运营费用｜月度趋势", template=TEMPLATE)
+                fig_opex = px.bar(opex_q, x="月份", y="运营费用", title=f"运营费用｜月度趋势 ({quarter})", template=TEMPLATE)
                 fig_opex.update_traces(marker_color="rgba(201,166,107,0.6)", hovertemplate="月份：%{x}<br>费用：¥%{y:,.2f}<extra></extra>")
                 fig_opex.update_layout(height=260, margin=dict(t=30, b=0))
                 st.plotly_chart(apply_plot_style(fig_opex), use_container_width=True)
-                render_insight_module("运营费用", get_opex_insights(opex_df))
+                render_insight_module("运营费用", get_opex_insights(opex_q))
             st.markdown("</div>", unsafe_allow_html=True)
             st.write("")
             
@@ -1946,7 +1952,7 @@ def main():
     # -------------------------
     with tab3:
         st.markdown('<div class="panel">', unsafe_allow_html=True)
-        st.subheader("客户年度经营洞察（Top10决策视图）")
+        st.subheader(f"客户经营洞察 ({quarter})")
         
         # 核心筛选过滤
         sales_q = quarter_filter_month_str(sales, quarter, "月份")
@@ -2005,13 +2011,14 @@ def main():
         st.write("")
 
         st.markdown('<div class="panel">', unsafe_allow_html=True)
-        st.subheader("业务员｜年度销售分析")
+        st.subheader(f"业务员销售分析 ({quarter})")
 
         repN = 10
-        reps = top_salesreps(sales, topn=repN)
+        # [Fix] 联动 Quarter 筛选
+        reps = top_salesreps(sales_q, topn=repN)
 
         if reps.empty:
-            st.warning("未检测到《销售数据》中的“业务员/销售员”列（或全为空）。如需该模块，请在销售数据表中加入“业务员”列。")
+            st.warning("未检测到有效数据，或筛选区间内无数据。")
         else:
             reps_show = reps.copy()
             reps_show["销售收入"] = reps_show["销售收入"].map(fmt_money)
@@ -2021,7 +2028,7 @@ def main():
             
             st.dataframe(reps_show[["业务员", "销售收入", "销售毛利", "毛利率", "占比"]], use_container_width=True, height=320)
 
-            fig = px.bar(reps, x="业务员", y="销售收入", title="业务员年度销售额（Top10）", template=TEMPLATE)
+            fig = px.bar(reps, x="业务员", y="销售收入", title=f"业务员销售额（Top10, {quarter}）", template=TEMPLATE)
             fig.update_traces(hovertemplate="业务员：%{x}<br>销售收入：¥%{y:,.2f}<extra></extra>")
             fig.update_layout(height=380)
             st.plotly_chart(apply_plot_style(fig), use_container_width=True)
