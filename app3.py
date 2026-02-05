@@ -1139,23 +1139,38 @@ def main():
             
         st.markdown("---")
         st.markdown("## 数据源")
-        # 更新为用户提供的最新确切路径
-        default_path = r"D:\财务工作\09-财务报表\2025年\季度、年度报表\2025年度报表\2025年全年.xlsx"
-        excel_path = st.sidebar.text_input("本地Excel路径（优先）", value=default_path)
-        upload = st.sidebar.file_uploader("或上传 2025年全年.xlsx", type=["xlsx"])
+
+        if is_cloud():
+            # Cloud Mode
+            excel_path = None
+            upload = st.sidebar.file_uploader("📂 上传Excel数据源 (2025年全年.xlsx)", type=["xlsx"])
+            if not upload:
+                st.info("☁️ 云端模式：请上传 Excel 文件以开始分析。")
+                st.stop()
+        else:
+            # Local Mode
+            # 更新为用户提供的最新确切路径
+            default_path = r"D:\财务工作\09-财务报表\2025年\季度、年度报表\2025年度报表\2025年全年.xlsx"
+            excel_path = st.sidebar.text_input("本地Excel路径（优先）", value=default_path)
+            upload = st.sidebar.file_uploader("或上传 2025年全年.xlsx", type=["xlsx"])
 
     # 尝试读取数据
     used = None
     fp = None
-    if excel_path and os.path.exists(excel_path):
-        used = excel_path
-        fp = file_fingerprint(excel_path)
-    elif upload is not None:
+    
+    if is_cloud():
+        # Cloud: upload is guaranteed by st.stop() above
         used = upload
-        # 上传文件对象本身作为缓存 key，此处 fp 可留空或用 object id
     else:
-        st.warning("未找到本地路径文件，也未上传Excel。请检查路径或上传文件。")
-        st.stop()
+        # Local logic
+        if excel_path and os.path.exists(excel_path):
+            used = excel_path
+            fp = file_fingerprint(excel_path)
+        elif upload is not None:
+            used = upload
+        else:
+            st.warning("未找到本地路径文件，也未上传Excel。请检查路径或上传文件。")
+            st.stop()
 
     # 统一读取
     data = load_all_dashboard_data(used, fp=fp)

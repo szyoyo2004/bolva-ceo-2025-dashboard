@@ -24,6 +24,7 @@ Thumbs.db
 # ===== Logs / outputs / zips / exes (DO NOT COMMIT) =====
 *.log
 *.txt
+!requirements.txt
 *.zip
 *.exe
 
