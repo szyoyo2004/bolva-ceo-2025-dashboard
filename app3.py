@@ -1642,7 +1642,7 @@ def main():
 
     # 侧边栏：交互控件
     st.sidebar.markdown("## 交互控制")
-    quarter = st.sidebar.selectbox("营收&毛利率趋势（2025）查看区间", ["全年", "Q1", "Q2", "Q3", "Q4"], index=0)
+    quarter = st.sidebar.selectbox("营收&净利率趋势（2025）查看区间", ["全年", "Q1", "Q2", "Q3", "Q4"], index=0)
     
     # 新增 Sidebar 输入
     st.sidebar.markdown("---")
