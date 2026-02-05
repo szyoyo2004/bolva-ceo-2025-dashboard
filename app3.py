@@ -1678,34 +1678,50 @@ def main():
 
     st.sidebar.caption("说明：净利润动态模拟 = 基准净利润 −（年度营收 × 营销费率变化）")
 
+    # -----------------------------
+    # 动态 KPI 计算 (Top Level)
+    # -----------------------------
+    # 季度过滤
+    profit_q = quarter_filter_month_str(annual_profit, quarter, "月份")
 
+    # 1. 营收
+    q_rev = float(profit_q["销售额"].sum())
+    
+    # 2. 净利润 (q_np)
+    if "净利润" in profit_q.columns:
+        q_np = float(profit_q["净利润"].sum())
+    elif "净利率" in profit_q.columns:
+        q_np = (profit_q["销售额"] * profit_q["净利率"]).sum()
+    else:
+        q_np = np.nan
 
-        # 季度过滤 (提前到 KPI 计算前)
-        profit_q = quarter_filter_month_str(annual_profit, quarter, "月份")
+    # 3. 净利率 (基准)
+    base_margin = (q_np / q_rev) if q_rev and not np.isnan(q_np) else np.nan
 
-        # KPI（基于筛选季度）
-        # 如果是 "全年"，profit_q == annual_profit，逻辑一致
-        
-        # 1. 营收
-        q_rev = float(profit_q["销售额"].sum())
-        
-        # 2. 净利润 (q_np)
-        if "净利润" in profit_q.columns:
-            q_np = float(profit_q["净利润"].sum())
-        elif "净利率" in profit_q.columns:
-            # 估算: sum(Sales * NPR)
-            q_np = (profit_q["销售额"] * profit_q["净利率"]).sum()
-        else:
-            q_np = np.nan
+    # 动态模拟 (营销费率滑块)
+    dyn_np = q_np - (q_rev * marketing_delta) if not np.isnan(q_np) else np.nan
+    dyn_margin = (dyn_np / q_rev) if q_rev and not np.isnan(dyn_np) else np.nan
 
-        # 3. 净利率 (基准)
-        base_margin = (q_np / q_rev) if q_rev and not np.isnan(q_np) else np.nan
+    # -----------------------------
+    # 页面主体
+    # -----------------------------
+    # 标题
+    st.markdown(
+        f"""
+        <div class="h1">BOLVA CEO 2025 年度经营决策看板 <span class="badge">Strategic AI Console</span></div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    # 顶部战略指南针
+    render_strategic_header(annual_profit, sales, platform)
 
-        # 动态模拟 (营销费率滑块) - Apply delta to the QUARTER's profit
-        # Assumption: Marketing delta affects the selected period
-        dyn_np = q_np - (q_rev * marketing_delta) if not np.isnan(q_np) else np.nan
-        dyn_margin = (dyn_np / q_rev) if q_rev and not np.isnan(dyn_np) else np.nan
+    tab1, tab2, tab3 = st.tabs(["经营总览", "费用分析", "客户&业务员分析"])
 
+    # -------------------------
+    # Tab1：经营总览
+    # -------------------------
+    with tab1:
         # KPI 四卡
         c1, c2, c3, c4 = st.columns(4)
         with c1:
@@ -1720,6 +1736,13 @@ def main():
         with c4:
             kpi_card("MARGIN", fmt_pct(dyn_margin) if not np.isnan(dyn_margin) else "—",
                      f"基准 {fmt_pct(base_margin)}" if not np.isnan(base_margin) else "", "％", f"{quarter} 净利率（动态）")
+
+        st.write("")
+        st.write("")
+        st.write("")
+
+        # 图表布局：左（营收&毛利率 + 渠道趋势）右（Top8产品贡献 + 月度快照）
+        left, right = st.columns([1.55, 1.0])
 
         with left:
             st.markdown('<div class="panel">', unsafe_allow_html=True)
