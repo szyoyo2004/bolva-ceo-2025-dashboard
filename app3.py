@@ -408,10 +408,10 @@ def read_sales(excel_file, fp=None):
     s[prod_col] = s[prod_col].astype(str).str.strip()
     s[b_col]    = s[b_col].astype(str).str.strip()
 
-    # 渠道：映射出的平台名稱 (Amazon, TikTok...) -> 用於趨勢圖和「客戶」頁面的主渠道分析
+    # 渠道：映射出的平台名称 (Amazon, TikTok...) -> 用于趋势图和「客户」页面的主渠道分析
     s["渠道_mapped"] = s[b_col].apply(map_channel)
     
-    # 业务类型：Excel 裡原始的 "渠道" 列內容 (B2B/B2C) -> 用於彙總卡片
+    # 业务类型：Excel 里原始的 "渠道" 列内容 (B2B/B2C) -> 用于汇总卡片
     if chan_col:
         s["业务类型"] = s[chan_col].astype(str).str.strip()
     else:
@@ -999,7 +999,7 @@ def get_platform_grid_insights(df):
     
     return [
         {
-            "headline": f"投放效率冠軍：{best_roas['平台']}，ROAS 达到 {best_roas['ROAS']:.2f}",
+            "headline": f"投放效率冠军：{best_roas['平台']}，ROAS 达到 {best_roas['ROAS']:.2f}",
             "detail": f"**口径**：平台费用表实时计算<br>**建议动作**：建议将低效平台的预算向 {best_roas['平台']} 倾斜。"
         },
         {
@@ -1020,8 +1020,8 @@ def get_customer_decision_insights(cust, sales_q):
             "detail": f"**口径**：客户/购货单位维度<br>**建议动作**：单一客户占比过高存在违约风险，建议多元化获客途径。"
         },
         {
-            "headline": f"利潤贡献分析：{top1['购货单位']} 為核心利潤引擎",
-            "detail": f"**关键数字**：预估毛利贡献 {fmt_money(top1['销售毛利'])}。<br>**建议动作**：加强與重要客戶的賬期合作，提高資金週轉率。"
+            "headline": f"利润贡献分析：{top1['购货单位']} 为核心利润引擎",
+            "detail": f"**关键数字**：预估毛利贡献 {fmt_money(top1['销售毛利'])}。<br>**建议动作**：加强与重要客户的账期合作，提高资金周转率。"
         }
     ]
 
@@ -1034,11 +1034,11 @@ def get_salesrep_insights(reps_df):
     
     res = []
     res.append({
-        "headline": f"销售冠軍：{top1['业务员']}，贡献率 {top1['占比']:.1%}",
-        "detail": f"**口径**：按业务员字段汇总銷售收入<br>**建议动作**：总结 Top 1 的拓客话术与资源配置，向全组推广。"
+        "headline": f"销售冠军：{top1['业务员']}，贡献率 {top1['占比']:.1%}",
+        "detail": f"**口径**：按业务员字段汇总销售收入<br>**建议动作**：总结 Top 1 的拓客话术与资源配置，向全组推广。"
     })
     res.append({
-        "headline": f"利潤标兵：{best_margin['业务员']}，毛利率高达 {best_margin['毛利率']:.1%}",
+        "headline": f"利润标兵：{best_margin['业务员']}，毛利率高达 {best_margin['毛利率']:.1%}",
         "detail": f"**口径**：销售毛利 / 销售收入<br>**建议动作**：分析其成交的产品组合，评估是否具备高客单价/高溢价商品的销售基因。"
     })
     return res
@@ -1060,13 +1060,13 @@ def get_executive_summary(annual_profit, sales, platform):
     elif last_month["销售额"] < annual_profit["销售额"].mean() * 0.8:
         momentum = "需关注波动"
         
-    summary = f"**經營現狀**：2025 全年營收已達成 {fmt_money(total_rev)}，當前增長趨勢**{momentum}**。 "
+    summary = f"**经营现状**：2025 全年营收已达成 {fmt_money(total_rev)}，当前增长趋势**{momentum}**。 "
     
     if not platform.empty:
         avg_roas = platform["ROAS"].mean()
-        summary += f"全渠道平均 ROAS 維持在 **{avg_roas:.2f}**，投放效率良好。 "
+        summary += f"全渠道平均 ROAS 维持在 **{avg_roas:.2f}**，投放效率良好。 "
         
-    summary += "建議關注 Q4 旺季庫存周轉及 2026 預測性備貨。"
+    summary += "建议关注 Q4 旺季库存周转及 2026 预测性备货。"
     return summary
 
 def render_strategic_header(annual_profit, sales, platform):
@@ -1084,9 +1084,9 @@ def render_strategic_header(annual_profit, sales, platform):
                 border-radius: 12px; padding: 15px; border: 1px solid rgba(201, 166, 107, 0.3);
                 margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div style="font-weight: bold; color: #8d7b68; font-size: 1.1em;">🧭 戰略指南針 (Executive Summary)</div>
+            <div style="font-weight: bold; color: #8d7b68; font-size: 1.1em;">🧭 战略指南针 (Executive Summary)</div>
             <div class="pulse-badge">
-                數據更新至：{last_data_month}
+                数据更新至：{last_data_month}
             </div>
         </div>
         <div style="color: #555; line-height: 1.6; font-size: 0.95em;">
@@ -1101,17 +1101,17 @@ def render_strategic_header(annual_profit, sales, platform):
 def render_final_action_checklist():
     with st.container():
         st.markdown("---")
-        st.markdown("### 🎯 戰略行動與清單 (CEO Roadmap)")
+        st.markdown("### 🎯 战略行动与清单 (CEO Roadmap)")
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.checkbox("核對核心渠道 (Amazon/TikTok) 預算遷移執行率", value=False)
-            st.checkbox("啟動 Top 10 客戶 Q1 年度返利談判", value=False)
+            st.checkbox("核对核心渠道 (Amazon/TikTok) 预算迁移执行率", value=False)
+            st.checkbox("启动 Top 10 客户 Q1 年度返利谈判", value=False)
         with c2:
-            st.checkbox("審核 2026 備貨計劃（進取型情景下的資金佔用）", value=False)
-            st.checkbox("優化低毛利（<15%）客戶的服務成本結構", value=False)
+            st.checkbox("审核 2026 备货计划（进取型情景下的资金占用）", value=False)
+            st.checkbox("优化低毛利（<15%）客户的服务成本结构", value=False)
         with c3:
-            st.checkbox("評估銷售團隊績效獎金與毛利掛鉤方案", value=False)
-            st.caption("✨ 提示：點擊核取方塊可記錄臨時決策思路。")
+            st.checkbox("评估销售团队绩效奖金与毛利挂钩方案", value=False)
+            st.caption("✨ 提示：点击核对框可记录临时决策思路。")
 
 # -----------------------------
 # 辅助处理
@@ -1212,7 +1212,7 @@ def main():
     # 标题
     st.markdown(
         f"""
-        <div class="h1">BOLVA CEO 經營決策控制艙 — 2025 <span class="badge">Strategic AI Console</span></div>
+        <div class="h1">BOLVA CEO 经营决策控制舱 — 2025 <span class="badge">Strategic AI Console</span></div>
         """,
         unsafe_allow_html=True
     )
