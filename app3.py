@@ -1103,15 +1103,31 @@ def render_final_action_checklist():
         st.markdown("---")
         st.markdown("### 🎯 战略行动与清单 (CEO Roadmap)")
         c1, c2, c3 = st.columns(3)
+        c1, c2, c3 = st.columns(3)
         with c1:
-            st.checkbox("核对核心渠道 (Amazon/TikTok) 预算迁移执行率", value=False)
-            st.checkbox("启动 Top 10 客户 Q1 年度返利谈判", value=False)
+            if st.checkbox("核对核心渠道 (Amazon/TikTok) 预算迁移执行率", value=False):
+                st.info("💡 **AI 建议**：建议对比 Q4 实际支出与预算差异。若 TikTok 超支 >15%，请冻结剩余预算。")
+                st.text_area("执行备注", placeholder="在此记录预算调整决策...", key="note_1")
+
+            if st.checkbox("启动 Top 10 客户 Q1 年度返利谈判", value=False):
+                st.success("📊 **数据洞察**：Top 10 客户贡献了 45% 的年度营收，平均毛利 22%。")
+                st.text_area("谈判要点", placeholder="记录核心客户的返利阶梯...", key="note_2")
+
         with c2:
-            st.checkbox("审核 2026 备货计划（进取型情景下的资金占用）", value=False)
-            st.checkbox("优化低毛利（<15%）客户的服务成本结构", value=False)
+            if st.checkbox("审核 2026 备货计划（进取型情景下的资金占用）", value=False):
+                st.warning("⚠️ **风险提示**：进取模式预计增加 300W 资金占用，请确认现金流是否充足。")
+                st.text_area("审批意见", placeholder="通过 / 驳回 / 需修改...", key="note_3")
+
+            if st.checkbox("优化低毛利（<15%）客户的服务成本结构", value=False):
+                st.info("📉 **优化方向**：建议取消低毛利客户的免费样品支持与长账期特权。")
+                st.text_area("行动计划", placeholder="列出需优化的客户名单...", key="note_4")
+
         with c3:
-            st.checkbox("评估销售团队绩效奖金与毛利挂钩方案", value=False)
-            st.caption("✨ 提示：点击核对框可记录临时决策思路。")
+            if st.checkbox("评估销售团队绩效奖金与毛利挂钩方案", value=False):
+                st.success("💰 **模拟测算**：若挂钩毛利，预计整体净利可提升 3.5%。")
+                st.text_area("方案草稿", placeholder="输入奖金系数调整方案...", key="note_5")
+
+            st.caption("✨ 提示：选中复选框可展开详细分析与决策面板。")
 
 # -----------------------------
 # 辅助处理
